@@ -1,19 +1,24 @@
-
 import React from "react";
 import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarMenuItem, SidebarMenuButton, SidebarMenu, SidebarTrigger } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { currentUser } from "@/data/mockData";
 import { Bell, Calendar, ChevronDown, FileText, Heart, Home, LogOut, Menu, Settings, User, Users } from "lucide-react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useMemo } from "react";
 
 const DashboardLayout = () => {
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const location = useLocation();
   const currentPath = location.pathname;
+
+  const handleLogout = () => {
+    // In a real app, this would clear auth state
+    navigate('/login');
+  };
 
   const navigationItems = useMemo(() => [
     { title: "Dashboard", path: "/", icon: Home },
@@ -21,6 +26,7 @@ const DashboardLayout = () => {
     { title: "Blood Tests", path: "/blood-tests", icon: Heart },
     { title: "Analysis Services", path: "/analysis", icon: Calendar },
     { title: "My Profile", path: "/profile", icon: User },
+    { title: "Settings", path: "/settings", icon: Settings },
   ], []);
 
   const providerItems = useMemo(() => [
@@ -100,16 +106,20 @@ const DashboardLayout = () => {
                 <DropdownMenuContent align="start" className="w-56">
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
+                  <DropdownMenuItem asChild>
+                    <Link to="/settings">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>

@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
@@ -13,6 +13,8 @@ import Analysis from "./pages/Analysis";
 import AnalysisService from "./pages/AnalysisService";
 import Profile from "./pages/Profile";
 import HealthRecords from "./pages/HealthRecords";
+import Settings from "./pages/Settings";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +25,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/login" element={<Login />} />
           <Route path="/" element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="/blood-tests" element={<BloodTests />} />
@@ -31,6 +34,7 @@ const App = () => (
             <Route path="/analysis/:serviceId" element={<AnalysisService />} />
             <Route path="/records" element={<HealthRecords />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
