@@ -26,7 +26,18 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					50: '#f0faff',
+					100: '#e0f5fe',
+					200: '#bae8fd',
+					300: '#7bd4fd',
+					400: '#38b6f8',
+					500: '#0e98eb',
+					600: '#0279ca',
+					700: '#0262a4',
+					800: '#065286',
+					900: '#0b446f',
+					950: '#082b4a',
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -61,6 +72,17 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				health: {
+					primary: '#0e98eb',
+					secondary: '#38bfa1',
+					accent: '#6e59a5',
+					warning: '#f6a35a',
+					danger: '#e3405f',
+					light: '#f0faff',
+					dark: '#082b4a',
+					gray: '#8e9196',
+					"gray-light": '#f1f5f9',
 				}
 			},
 			borderRadius: {
@@ -84,11 +106,16 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-light': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.7' },
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-light': 'pulse-light 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
 			}
 		}
 	},
