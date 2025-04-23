@@ -1,11 +1,21 @@
 
-import React from "react";
+import React, { useState } from "react";
 import AnalysisForm from "@/components/analysis/AnalysisForm";
+import AnalysisResults from "@/components/analysis/AnalysisResults";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AnalysisResult } from "@/types";
 
 const AnalysisService: React.FC = () => {
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const handleAnalysisComplete = (result: AnalysisResult) => {
+    setIsAnalyzing(false);
+    setAnalysisResult(result);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center">
@@ -18,7 +28,17 @@ const AnalysisService: React.FC = () => {
         <h1 className="text-2xl font-bold tracking-tight">Analysis Service</h1>
       </div>
       
-      <AnalysisForm />
+      <div className="space-y-8">
+        <AnalysisForm 
+          onAnalysisStart={() => setIsAnalyzing(true)}
+          onAnalysisComplete={handleAnalysisComplete}
+        />
+        
+        <AnalysisResults 
+          result={analysisResult}
+          isLoading={isAnalyzing}
+        />
+      </div>
     </div>
   );
 };

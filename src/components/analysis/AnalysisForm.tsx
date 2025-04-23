@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,10 +6,15 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
 import { analysisServices, bloodTests } from '@/data/mockData';
 import { useParams } from 'react-router-dom';
-import { AnalysisOption } from '@/types';
+import { AnalysisOption, AnalysisResult } from '@/types';
 import { Upload, Languages } from 'lucide-react';
 
-const AnalysisForm = () => {
+interface AnalysisFormProps {
+  onAnalysisStart?: () => void;
+  onAnalysisComplete?: (result: AnalysisResult) => void;
+}
+
+const AnalysisForm: React.FC<AnalysisFormProps> = ({ onAnalysisStart, onAnalysisComplete }) => {
   const { serviceId } = useParams<{ serviceId: string }>();
   const service = analysisServices.find(s => s.id === serviceId);
   
@@ -31,13 +35,33 @@ const AnalysisForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    onAnalysisStart?.();
     setAnalysisInProgress(true);
     
-    // Simulate API call
+    // Simulate API call with mock data
     setTimeout(() => {
       setAnalysisInProgress(false);
-      // In a real app, we would navigate to results page or display results
-      alert("Analysis complete! In a real app, the results would be displayed here.");
+      
+      const mockResult: AnalysisResult = {
+        id: "mock-1",
+        bloodTestId: selectedTest || "upload",
+        serviceId: serviceId || "default",
+        summary: "Your blood test results show generally normal values across most parameters, with a few areas that might need attention.",
+        insights: [
+          "Vitamin D levels are slightly below the optimal range",
+          "Blood glucose levels are within normal limits",
+          "Cholesterol profile shows healthy ratios"
+        ],
+        recommendations: [
+          "Consider vitamin D supplementation after consulting with your healthcare provider",
+          "Maintain current dietary habits that are supporting healthy blood glucose",
+          "Schedule a follow-up test in 6 months"
+        ],
+        date: new Date().toISOString(),
+        options: options
+      };
+      
+      onAnalysisComplete?.(mockResult);
     }, 2000);
   };
 
