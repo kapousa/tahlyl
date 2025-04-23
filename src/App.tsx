@@ -12,6 +12,7 @@ import BloodTestDetail from "./pages/BloodTestDetail";
 import Analysis from "./pages/Analysis";
 import AnalysisService from "./pages/AnalysisService";
 import Profile from "./pages/Profile";
+import HealthRecords from "./pages/HealthRecords";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/blood-tests/:testId" element={<BloodTestDetail />} />
             <Route path="/analysis" element={<Analysis />} />
             <Route path="/analysis/:serviceId" element={<AnalysisService />} />
+            <Route path="/records" element={<HealthRecords />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
           <Route path="*" element={<NotFound />} />
