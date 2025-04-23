@@ -1,13 +1,13 @@
-import React from "react";
+
+import React, { useMemo } from "react";
 import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarMenuItem, SidebarMenuButton, SidebarMenu, SidebarTrigger } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { currentUser } from "@/data/mockData";
-import { Bell, Calendar, ChevronDown, FileText, Heart, Home, LogOut, Menu, Settings, User, Users } from "lucide-react";
+import { Bell, Calendar, ChevronDown, FileText, Heart, Home, LogOut, Settings, User } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useMemo } from "react";
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
@@ -22,16 +22,12 @@ const DashboardLayout = () => {
 
   const navigationItems = useMemo(() => [
     { title: "Dashboard", path: "/", icon: Home },
-    { title: "Health Records", path: "/records", icon: FileText },
     { title: "Blood Tests", path: "/blood-tests", icon: Heart },
     { title: "Analysis Services", path: "/analysis", icon: Calendar },
-    { title: "My Profile", path: "/profile", icon: User },
-    { title: "Settings", path: "/settings", icon: Settings },
   ], []);
 
   const providerItems = useMemo(() => [
-    { title: "Patients", path: "/patients", icon: Users },
-    { title: "Settings", path: "/settings", icon: Settings },
+    { title: "Patients", path: "/patients", icon: User },
   ], []);
 
   return (
@@ -154,3 +150,4 @@ const DashboardLayout = () => {
 };
 
 export default DashboardLayout;
+
