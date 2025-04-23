@@ -37,7 +37,7 @@ const DashboardLayout = () => {
               <div className="rounded-md bg-primary p-1.5">
                 <Heart size={18} className="text-white" />
               </div>
-              <span className="font-semibold text-lg">HealthInsight</span>
+              <span className="font-semibold text-lg">Tahlyl</span>
             </Link>
           </SidebarHeader>
           
