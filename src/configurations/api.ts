@@ -1,8 +1,8 @@
 import exp from "constants";
 
 // config.ts
-//export const API_BASE_URL: string = "http://localhost:8000";
-export const API_BASE_URL: string = "https://tahlyl-backend.onrender.com";
+export const API_BASE_URL: string = "http://localhost:8000";
+//export const API_BASE_URL: string = "https://tahlyl-backend.onrender.com";
 
 // Services
 export const BLOOD_TESTS_ENDPOINT: string = `${API_BASE_URL}/bloodtest`;
