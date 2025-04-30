@@ -22,7 +22,7 @@ const DashboardLayout = () => {
 
   const navigationItems = useMemo(() => [
     { title: "Dashboard", path: "/", icon: Home },
-    { title: "Blood Tests", path: "/blood-tests", icon: Heart },
+    { title: "Blood Tests", path: "/bloodtests", icon: Heart },
     { title: "Analysis Services", path: "/analysis", icon: Calendar },
   ], []);
 

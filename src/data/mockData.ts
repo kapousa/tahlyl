@@ -3,8 +3,9 @@ import { AnalysisService, BloodTest, HealthMetric, User } from "@/types";
 
 export const currentUser: User = {
   id: "u1",
-  name: "Sarah Johnson",
-  email: "sarah.johnson@example.com",
+  name: "Winter Wolf",
+  password: "passworde",
+  email: "winterwolf@example.com",
   role: "patient",
   avatar: "/avatar.png"
 };

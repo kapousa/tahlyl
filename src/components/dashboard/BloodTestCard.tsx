@@ -71,7 +71,7 @@ const BloodTestCard: React.FC<BloodTestCardProps> = ({ test }) => {
       </CardContent>
       <CardFooter className="flex justify-between pt-0">
         <Button variant="outline" size="sm" asChild>
-          <Link to={`/blood-tests/${test.id}`}>
+          <Link to={`/bloodtests/${test.id}`}>
             <FileText className="mr-2 h-4 w-4" />
             View Report
           </Link>

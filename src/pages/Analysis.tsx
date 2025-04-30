@@ -1,10 +1,41 @@
-
-import React from "react";
-import { analysisServices } from "@/data/mockData";
+import React, { useState, useEffect } from "react";
 import AnalysisServiceCard from "@/components/analysis/AnalysisServiceCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ANALYSIS_SERVICES_ENDPOINT } from "@/configurations/api";
 
 const Analysis: React.FC = () => {
+  const [analysisServices, setAnalysisServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetch(`${ANALYSIS_SERVICES_ENDPOINT}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setAnalysisServices(data);
+      } catch (e: any) {
+        setError(e.message);
+        console.error("Error fetching services:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
+  if (loading) {
+    return <div>Loading analysis services...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading analysis services: {error}</div>;
+  }
+
   return (
     <div className="space-y-8">
       <div>
@@ -13,7 +44,7 @@ const Analysis: React.FC = () => {
           Select a service to analyze your blood test results and gain valuable insights
         </p>
       </div>
-      
+
       <Card className="bg-primary-50 border-primary-100">
         <CardHeader>
           <CardTitle className="text-lg text-primary-800">How it works</CardTitle>
@@ -51,7 +82,7 @@ const Analysis: React.FC = () => {
           </ol>
         </CardContent>
       </Card>
-      
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {analysisServices.map((service) => (
           <AnalysisServiceCard key={service.id} service={service} />

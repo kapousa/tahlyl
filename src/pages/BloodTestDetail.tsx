@@ -17,7 +17,7 @@ const BloodTestDetailPage: React.FC = () => {
         <h2 className="text-xl font-medium mb-2">Test not found</h2>
         <p className="text-muted-foreground mb-6">The requested blood test could not be found.</p>
         <Button asChild>
-          <Link to="/blood-tests">
+          <Link to="/bloodtests">
             <ChevronLeft className="mr-2 h-4 w-4" />
             Back to Blood Tests
           </Link>
@@ -30,7 +30,7 @@ const BloodTestDetailPage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center">
         <Button variant="ghost" asChild className="mr-4">
-          <Link to="/blood-tests">
+          <Link to="/bloodtests">
             <ChevronLeft className="mr-1 h-4 w-4" />
             Back
           </Link>

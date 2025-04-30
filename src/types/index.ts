@@ -1,8 +1,9 @@
 
-export interface User {
+export interface User { // Backend updated
   id: string;
   name: string;
   email: string;
+  password: string;
   role: "patient" | "provider";
   avatar?: string;
 }
@@ -39,15 +40,26 @@ export interface AnalysisOption {
   language: "english" | "arabic";
 }
 
+export interface AnalysisDetailedResult {
+  value: number | string;
+  unit?: string;
+  normal_range?: string;
+  status?: 'high' | 'normal' | 'low';
+}
+
 export interface AnalysisResult {
   id: string;
   bloodTestId: string;
   serviceId: string;
-  summary: string;
-  insights: string[];
-  recommendations: string[];
+  summary?: string;
+  detailed_results?: Record<string, AnalysisDetailedResult | AnalysisDetailedResult[]>;
+  potential_implications?: string[] | string;
+  next_steps?: string[] | string;
+  insights?: string[]; // Consider if these should also have status/range
+  recommendations?: string[];
   date: string;
   options: AnalysisOption;
+  [key: string]: any; // Allow for other dynamic keys from the JSON
 }
 
 export interface HealthMetric {
