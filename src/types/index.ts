@@ -10,10 +10,9 @@ export interface User { // Backend updated
 
 export interface BloodTest {
   id: string;
-  date: string;
+  added_datetime: string;
   name: string;
-  metrics: BloodMetric[];
-  fileUrl: string;
+  metrics: BloodMetric[]; 
   status: "normal" | "abnormal" | "critical";
 }
 
@@ -41,10 +40,10 @@ export interface AnalysisOption {
 }
 
 export interface AnalysisDetailedResult {
-  value: number | string;
+  value: number | string | { first_hour?: number; second_hour?: number } | Record<string, any>; // Be more specific if needed
   unit?: string;
-  normal_range?: string;
-  status?: 'high' | 'normal' | 'low';
+  normal_range?: string | { first_hour?: string; second_hour?: string };
+  status?: 'high' | 'normal' | 'low' | string; // Include other potential strings
 }
 
 export interface AnalysisResult {

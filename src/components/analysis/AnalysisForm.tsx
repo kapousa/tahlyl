@@ -5,15 +5,14 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
 import { useParams } from 'react-router-dom';
-import { AnalysisOption, AnalysisResult, AnalysisService, BloodTest } from '@/types';
+import { AnalysisOption, AnalysisResult, AnalysisService } from '@/types';
 import { Upload, Languages } from 'lucide-react';
-import { ANALYSIS_SERVICE_VIEW_ENDPOINT, BLOOD_TESTS_ENDPOINT, ANALYSIS_ANALYZE_ENDPOINT } from "@/configurations/api";
+import { ANALYSIS_SERVICE_VIEW_ENDPOINT, ANALYSIS_ANALYZE_ENDPOINT } from "@/configurations/api";
 
 interface AnalysisFormProps {
   onAnalysisStart?: () => void;
   onAnalysisComplete?: (result: AnalysisResult) => void;
   analysisServiceEndpoint?: string;
-  bloodTestsEndpoint?: string;
   analysisEndpoint: string;
 }
 
@@ -21,29 +20,26 @@ const AnalysisForm: React.FC<AnalysisFormProps> = ({
   onAnalysisStart,
   onAnalysisComplete,
   analysisServiceEndpoint = `${ANALYSIS_SERVICE_VIEW_ENDPOINT}`,
-  bloodTestsEndpoint = `${BLOOD_TESTS_ENDPOINT}`,
   analysisEndpoint = `${ANALYSIS_ANALYZE_ENDPOINT}`,
 }) => {
   const { serviceId } = useParams<{ serviceId: string }>();
-  const [service, setService] = useState<AnalysisService | null | undefined>(); // Changed to include null
-  const [bloodTestsData, setBloodTestsData] = useState<BloodTest[]>([]);
+  const [service, setService] = useState<AnalysisService | null | undefined>();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [options, setOptions] = useState<AnalysisOption>({
     tone: "general",
     language: "english"
   });
   const [analysisInProgress, setAnalysisInProgress] = useState(false);
-  const [selectedTest, setSelectedTest] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch(`${analysisServiceEndpoint}/${serviceId}`); // Corrected endpoint
+        const response = await fetch(`${analysisServiceEndpoint}/${serviceId}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data: AnalysisService | null = await response.json(); // Corrected type
+        const data: AnalysisService | null = await response.json();
         setService(data);
       } catch (e: any) {
         console.error("Could not fetch analysis services:", e);
@@ -51,23 +47,8 @@ const AnalysisForm: React.FC<AnalysisFormProps> = ({
       }
     };
 
-    const fetchBloodTests = async () => {
-      try {
-        const response = await fetch(bloodTestsEndpoint);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data: BloodTest[] = await response.json();
-        setBloodTestsData(data);
-      } catch (e: any) {
-        console.error("Could not fetch blood tests:", e);
-        setError("Failed to load blood tests.");
-      }
-    };
-
     fetchServices();
-    fetchBloodTests();
-  }, [bloodTestsEndpoint, serviceId, analysisServiceEndpoint]);
+  }, [serviceId, analysisServiceEndpoint]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -76,7 +57,6 @@ const AnalysisForm: React.FC<AnalysisFormProps> = ({
     } else {
       setSelectedFile(null);
     }
-    setSelectedTest(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -90,21 +70,16 @@ const AnalysisForm: React.FC<AnalysisFormProps> = ({
     formData.append("tone", options.tone);
     formData.append("arabic", options.language === "arabic" ? "true" : "false");
 
-    // Add report_type with service name
     if (service?.name) {
         formData.append("report_type", service.name);
     }
 
-
-    if (selectedFile) {
-      formData.append("reportFile", selectedFile);
-    } else if (selectedTest) {
-      formData.append("bloodTestId", selectedTest);
-    } else {
-      setError("Please select a blood test or upload a report.");
+    if (!selectedFile) {
+      setError("Please upload a blood test report.");
       setAnalysisInProgress(false);
       return;
     }
+    formData.append("reportFile", selectedFile);
 
     try {
       const response = await fetch(analysisEndpoint, {
@@ -166,41 +141,6 @@ const AnalysisForm: React.FC<AnalysisFormProps> = ({
             <h3 className="text-lg font-medium">1. Select Blood Test Report</h3>
 
             <div className="space-y-4">
-              <div className="grid grid-cols-1 gap-4">
-                {bloodTestsData.length > 0 && (
-                  <>
-                    <Label htmlFor="test-select">Choose from your existing tests:</Label>
-                    <select
-                      id="test-select"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                      value={selectedTest || ''}
-                      onChange={(e) => {
-                        setSelectedTest(e.target.value);
-                        setSelectedFile(null);
-                      }}
-                    >
-                      <option value="">Select a test...</option>
-                      {bloodTestsData.map(test => (
-                        <option key={test.id} value={test.id}>
-                          {test.name} ({new Date(test.date).toLocaleDateString()})
-                        </option>
-                      ))}
-                    </select>
-                  </>
-                )}
-              </div>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Or
-                  </span>
-                </div>
-              </div>
-
               <div className="grid w-full max-w-sm items-center gap-1.5">
                 <Label htmlFor="file-upload">Upload a new report:</Label>
                 <div className="flex items-center gap-2">
@@ -259,12 +199,12 @@ const AnalysisForm: React.FC<AnalysisFormProps> = ({
               <div>
                 <RadioGroupItem value="educational" id="tone-educational" className="peer sr-only" />
                 <Label
-  htmlFor="tone-educational"
-  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
->
-  <span className="mb-2 font-medium">Educational</span>
-  <span className="text-xs text-center">Detailed explanations with helpful context</span>
-</Label>
+                  htmlFor="tone-educational"
+                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                >
+                  <span className="mb-2 font-medium">Educational</span>
+                  <span className="text-xs text-center">Detailed explanations with helpful context</span>
+                </Label>
               </div>
             </RadioGroup>
           </div>
@@ -304,7 +244,7 @@ const AnalysisForm: React.FC<AnalysisFormProps> = ({
           <Button
             type="submit"
             className="w-full"
-            disabled={(!selectedFile && !selectedTest) || analysisInProgress}
+            disabled={!selectedFile || analysisInProgress}
           >
             {analysisInProgress ? "Analyzing..." : "Generate Analysis"}
           </Button>
