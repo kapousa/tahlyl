@@ -15,6 +15,7 @@ import Profile from "./pages/Profile";
 import HealthRecords from "./pages/HealthRecords";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
+import Register from "./components/user/register";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/" element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="/bloodtests" element={<BloodTests />} />
