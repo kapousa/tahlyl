@@ -4,7 +4,7 @@ import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter,
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { currentUser } from "@/data/mockData";
-import { Bell, Calendar, ChevronDown, FileText, Heart, Home, LogOut, Settings, User } from "lucide-react";
+import { Bell, Calendar, ChevronDown, FileText, Heart, Home, LogOut, Settings, User, Activity, Syringe, Microscope } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -22,8 +22,8 @@ const DashboardLayout = () => {
 
   const navigationItems = useMemo(() => [
     { title: "Dashboard", path: "/", icon: Home },
-    { title: "Blood Tests", path: "/bloodtests", icon: Heart },
-    { title: "Analysis Services", path: "/analysis", icon: Calendar },
+    { title: "Blood Tests", path: "/bloodtests", icon: Syringe },
+    { title: "Analysis Services", path: "/analysis", icon: Microscope },
   ], []);
 
   const providerItems = useMemo(() => [
@@ -37,7 +37,7 @@ const DashboardLayout = () => {
           <SidebarHeader>
             <Link to="/" className="flex items-center gap-2">
               <div className="rounded-md bg-primary p-1.5">
-                <Heart size={18} className="text-white" />
+                <Activity size={18} className="text-white" />
               </div>
               <span className="font-semibold text-lg">Tahlyl</span>
             </Link>
