@@ -14,13 +14,6 @@ const deriveStatus = (metrics: any[]): MedicalReportCardType['status'] => {
   return "unknown";
 };
 
-/**
- * Helper function to parse metric values that can be:
- * 1. Simple strings/numbers (e.g., "1.13")
- * 2. The string "None"
- * 3. A string representing a Python dictionary (e.g., "{'first_hour': 38}")
- * Moved outside the component to avoid re-creation on every render
- */
 const parseMetricValue = (input: string | null | undefined): string | { [key: string]: any } => {
   if (typeof input !== 'string' || input === "None" || input.trim() === "") {
     return ""; // Return empty string for null, undefined, "None", or empty string inputs
@@ -93,7 +86,7 @@ const RecentMedicalReports: React.FC = () => {
           new Date(b.report_date).getTime() - new Date(a.report_date).getTime()
         );
 
-        const normalizedAndSliced = sortedReports.slice(0, 2).map((report: any) => {
+        const normalizedAndSliced = sortedReports.slice(0, 3).map((report: any) => {
           const transformedMetrics = Array.isArray(report.metrics)
             ? report.metrics
                 .filter((m: any) => typeof m === 'object' && m !== null) // Filter out any null/undefined metrics

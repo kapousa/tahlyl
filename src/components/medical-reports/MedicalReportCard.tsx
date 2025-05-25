@@ -67,10 +67,10 @@ const MedicalReportCard: React.FC<MedicalReportCardProps> = ({ test }) => {
   return (
     <Card className="flex flex-col h-full">
       <CardHeader>
-        <CardTitle>{test.name}</CardTitle> {/* Changed to CardTitle for semantic correctness */}
+        <CardTitle>{test.name}</CardTitle>
         <CardDescription>{formatDate(test.date)}</CardDescription>
         <Badge variant={getStatusBadge(test.status)} className="mt-2 w-fit">
-          Status: {test.status.charAt(0).toUpperCase() + test.status.slice(1)}
+          {test.status.charAt(0).toUpperCase() + test.status.slice(1)}
         </Badge>
       </CardHeader>
       <CardContent className="flex-grow">
@@ -81,15 +81,14 @@ const MedicalReportCard: React.FC<MedicalReportCardProps> = ({ test }) => {
                 <span className="font-semibold">{metric.name} </span>
                 <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-2 text-right">
                   <span
-                    className={`font-medium ${
-                      metric.status === 'normal'
+                    className={`font-medium ${metric.status === 'normal'
                         ? 'text-health-secondary'
                         : metric.status === 'high' || metric.status === 'critical'
-                        ? 'text-red-600'
-                        : metric.status === 'low'
-                        ? 'text-orange-500'
-                        : 'text-gray-500'
-                    }`}
+                          ? 'text-red-600'
+                          : metric.status === 'low'
+                            ? 'text-orange-500'
+                            : 'text-gray-500'
+                      }`}
                   >
                     {renderValue(metric.value)} {renderValue(metric.unit)}
                   </span>
@@ -117,8 +116,9 @@ const MedicalReportCard: React.FC<MedicalReportCardProps> = ({ test }) => {
           <p className="text-muted-foreground text-sm">No detailed metrics available for this report.</p>
         )}
       </CardContent>
-      <CardFooter>
-        <Button variant="outline" className="w-full">View Details</Button>
+      <CardFooter className="flex justify-between items-center">
+        <Button variant="outline">View Details</Button>
+        <Button variant="outline">View Analysis</Button>
       </CardFooter>
     </Card>
   );
