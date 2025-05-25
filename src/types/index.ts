@@ -27,6 +27,60 @@ export interface BloodMetric {
   status: "normal" | "high" | "low" | "critical";
 }
 
+export interface MedicalReport {
+  id: string;
+  added_datetime: string;
+  name: string;
+  metrics: BloodMetric[]; 
+  status: "normal" | "abnormal" | "critical";
+}
+
+// src/types/index.ts
+
+export interface MedicalReportCardType {
+  id: string | number;
+  report_name: string;
+  report_date: string;
+  status: string;
+  metrics: {
+    name: string;
+    value: string | { [key: string]: any }; // Allow object or string
+    unit: string | { [key: string]: any };  // Allow object or string
+    status: string;
+    // Make referenceRange optional, as some metrics might not have it
+    referenceRange?: {
+      min: string | { [key: string]: any }; // Allow object or string
+      max: string | { [key: string]: any }; // Allow object or string
+    };
+  }[];
+}
+
+export interface Metric {
+  id: string;
+  name?: string;
+  value?: string;
+  unit?: string;
+  reference_range_min?: string; 
+  reference_range_max?: string;
+  status?: string;
+  result_id: string;
+  created_by?: string;
+  created_date?: string;
+  updated_by?: string;
+  updated_date?: string;
+};
+
+export interface MedicalReportMetric {
+  name: string;
+  value: number;
+  unit: string;
+  referenceRange: {
+    min: number;
+    max: number;
+  };
+  status: "normal" | "high" | "low" | "critical";
+}
+
 export interface AnalysisService {
   id: string;
   name: string;

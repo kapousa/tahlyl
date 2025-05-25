@@ -75,7 +75,7 @@ const AnalysisForm: React.FC<AnalysisFormProps> = ({
     }
 
     if (!selectedFile) {
-      setError("Please upload a blood test report.");
+      setError("Please upload a medical report.");
       setAnalysisInProgress(false);
       return;
     }
@@ -138,7 +138,7 @@ const AnalysisForm: React.FC<AnalysisFormProps> = ({
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-6">
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">1. Select Blood Test Report</h3>
+            <h3 className="text-lg font-medium">1. Select Medical Report</h3>
 
             <div className="space-y-4">
               <div className="grid w-full max-w-sm items-center gap-1.5">

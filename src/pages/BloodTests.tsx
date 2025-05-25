@@ -10,8 +10,31 @@ import { Search } from "lucide-react";
 const BloodTests: React.FC = () => {
   return (
     <div className="space-y-6">
+      <Card className="bg-muted/40 border-dashed border-muted">
+        <CardHeader className="flex flex-row items-center justify-center space-y-0 pb-2">
+          <CardTitle className="text-xl font-medium">Upload New Medical Report</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center pt-4 pb-6">
+          <p className="mb-4 text-sm text-muted-foreground text-center">
+            Upload your latest medical report results to keep track of your health
+          </p>
+          <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-muted rounded-lg cursor-pointer bg-background hover:bg-muted/30">
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              <svg className="w-8 h-8 mb-3 text-muted-foreground" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+              </svg>
+              <p className="mb-1 text-sm text-muted-foreground">
+                <span className="font-semibold">Click to upload</span> or drag and drop
+              </p>
+              <p className="text-xs text-muted-foreground">PDF, PNG, or JPG</p>
+            </div>
+            <input id="dropzone-file" type="file" className="hidden" />
+          </label>
+        </CardContent>
+      </Card>
+
       <div className="flex flex-col md:flex-row md:items-center gap-4 md:justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Blood Tests</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Medical Reports</h1>
         
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative">
@@ -42,29 +65,6 @@ const BloodTests: React.FC = () => {
           <BloodTestCard key={test.id} test={test} />
         ))}
       </div>
-      
-      <Card className="bg-muted/40 border-dashed border-muted">
-        <CardHeader className="flex flex-row items-center justify-center space-y-0 pb-2">
-          <CardTitle className="text-xl font-medium">Upload New Blood Test</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center pt-4 pb-6">
-          <p className="mb-4 text-sm text-muted-foreground text-center">
-            Upload your latest blood test results to keep track of your health
-          </p>
-          <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-muted rounded-lg cursor-pointer bg-background hover:bg-muted/30">
-            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-              <svg className="w-8 h-8 mb-3 text-muted-foreground" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-              </svg>
-              <p className="mb-1 text-sm text-muted-foreground">
-                <span className="font-semibold">Click to upload</span> or drag and drop
-              </p>
-              <p className="text-xs text-muted-foreground">PDF, PNG, or JPG</p>
-            </div>
-            <input id="dropzone-file" type="file" className="hidden" />
-          </label>
-        </CardContent>
-      </Card>
     </div>
   );
 };

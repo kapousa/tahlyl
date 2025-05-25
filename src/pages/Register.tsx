@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import { toast } from "sonner";
+import { USER_REGISTER_ENDPOIN } from "@/configurations/api";
 
 const Register: React.FC = () => {
   const [name, setName] = useState('');
@@ -23,7 +24,7 @@ const Register: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/users/register/', {
+      const response = await fetch(`${USER_REGISTER_ENDPOIN}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

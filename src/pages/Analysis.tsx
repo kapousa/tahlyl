@@ -42,7 +42,7 @@ const Analysis: React.FC = () => {
       <div>
         <h1 className="text-2xl font-bold tracking-tight mb-2">Analysis Services</h1>
         <p className="text-muted-foreground">
-          Select a service to analyze your blood test results and gain valuable insights
+          Select a service to analyze your medical report results and gain valuable insights
         </p>
       </div>
       <Accordion type="single" collapsible className="mb-8">
@@ -62,7 +62,7 @@ const Analysis: React.FC = () => {
               <li className="flex gap-3">
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">2</div>
                 <div>
-                  <p className="font-medium">Upload your blood test report</p>
+                  <p className="font-medium">Upload your medical report</p>
                   <p className="text-sm text-muted-foreground">Either select from your existing reports or upload a new one</p>
                 </div>
               </li>
