@@ -1,9 +1,7 @@
-import exp from "constants";
+export const API_BASE_URL: string = import.meta.env.VITE_APP_API_BASE_URL || "http://localhost:8000";
 
-// config.ts
-export const API_BASE_URL: string = "http://localhost:8000";
-//export const API_BASE_URL: string = "https://tahlyl-backend.onrender.com";
-
+export const ACCESS_TOKEN_EXPIRE_MINUTES: number = 52560000;
+    
 // Users
 export const USERS_ENDPOINT: string = `${API_BASE_URL}/users`;
 export const USER_LOGIN_ENDPOIN: string = `${USERS_ENDPOINT}/login`;

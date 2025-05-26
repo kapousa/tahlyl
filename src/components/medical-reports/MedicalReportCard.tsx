@@ -52,7 +52,7 @@ const renderValue = (value: string | { [key: string]: any }): string => {
       .join(', ');
   }
   // If it's a string, ensure "None" is displayed as empty or N/A
-  if (value === "None" || value === null || value === undefined || value.trim() === "") {
+  if (value === "None" || value === null || value === undefined || (typeof value === 'string' && value.trim() === "")) {
     return ""; // or "N/A" if you prefer
   }
   return value;
@@ -77,9 +77,9 @@ const MedicalReportCard: React.FC<MedicalReportCardProps> = ({ test }) => {
         {test.metrics && test.metrics.length > 0 ? (
           <div className="grid grid-cols-1 gap-2">
             {test.metrics.map((metric, index) => (
-              <div key={index} className="flex justify-between items-center text-sm">
-                <span className="font-semibold">{metric.name} </span>
-                <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-2 text-right">
+              <div key={index} className="flex justify-between items-start text-sm">
+                <span className="font-semibold flex-shrink-0 pr-2">{metric.name} </span>
+                <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-2 text-right flex-wrap justify-end">
                   <span
                     className={`font-medium ${metric.status === 'normal'
                         ? 'text-health-secondary'
@@ -92,21 +92,16 @@ const MedicalReportCard: React.FC<MedicalReportCardProps> = ({ test }) => {
                   >
                     {renderValue(metric.value)} {renderValue(metric.unit)}
                   </span>
-                  {/*
-                    CRUCIAL FIX: Conditionally render the reference range span
-                    ONLY if metric.referenceRange is defined.
-                  */}
                   {metric.referenceRange ? (
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">
+                    <span className="text-xs text-muted-foreground text-wrap break-words min-w-0">
                       (
                       {renderValue(metric.referenceRange.min)}
-                      {/* Add hyphen only if both min and max have non-empty rendered values */}
                       {(renderValue(metric.referenceRange.min) && renderValue(metric.referenceRange.max)) ? ' - ' : ''}
                       {renderValue(metric.referenceRange.max)}
                       )
                     </span>
                   ) : (
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">(N/A)</span>
+                    <span className="text-xs text-muted-foreground text-wrap break-words min-w-0">(N/A)</span>
                   )}
                 </div>
               </div>
@@ -116,9 +111,10 @@ const MedicalReportCard: React.FC<MedicalReportCardProps> = ({ test }) => {
           <p className="text-muted-foreground text-sm">No detailed metrics available for this report.</p>
         )}
       </CardContent>
-      <CardFooter className="flex justify-between items-center">
-        <Button variant="outline">View Details</Button>
-        <Button variant="outline">View Analysis</Button>
+      <CardFooter className="flex gap-2"> {/* Removed justify-between here */}
+        {/* Added flex-grow and w-1/2 for consistent sizing across screens */}
+        <Button variant="outline" className="flex-grow w-1/2">Details</Button>
+        <Button variant="outline" className="flex-grow w-1/2">Analysis</Button>
       </CardFooter>
     </Card>
   );

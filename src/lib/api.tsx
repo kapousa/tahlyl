@@ -1,9 +1,10 @@
 // src/lib/api.ts
+import { API_BASE_URL } from "@/configurations/api";
 import axios from "axios";
 
 
 const api = axios.create({
-  baseURL: "http://your-api-url.com", // Replace with your API base URL
+  baseURL: `${API_BASE_URL}`, 
   headers: {
     "Content-Type": "application/json",
   },

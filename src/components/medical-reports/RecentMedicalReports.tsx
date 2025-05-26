@@ -86,7 +86,7 @@ const RecentMedicalReports: React.FC = () => {
           new Date(b.report_date).getTime() - new Date(a.report_date).getTime()
         );
 
-        const normalizedAndSliced = sortedReports.slice(0, 3).map((report: any) => {
+        const normalizedAndSliced = sortedReports.slice(0, 2).map((report: any) => {
           const transformedMetrics = Array.isArray(report.metrics)
             ? report.metrics
                 .filter((m: any) => typeof m === 'object' && m !== null) // Filter out any null/undefined metrics
