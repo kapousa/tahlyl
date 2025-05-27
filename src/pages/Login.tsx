@@ -91,7 +91,7 @@ const Login: React.FC = () => {
         <CardHeader className="space-y-1">
           <div className="flex items-center gap-2">
             <LogIn className="h-5 w-5 text-primary" />
-            <CardTitle className="text-2xl">Login</CardTitle>
+            <CardTitle className="text-2xl">Tahlyl | Login</CardTitle>
           </div>
           <CardDescription>
             Enter your credentials to access your account
