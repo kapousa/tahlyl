@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -20,7 +21,7 @@ const AnalysisForm: React.FC<AnalysisFormProps> = ({
   onAnalysisStart,
   onAnalysisComplete,
   analysisServiceEndpoint = `${ANALYSIS_SERVICE_VIEW_ENDPOINT}`,
-  analysisEndpoint = `${ANALYSIS_ANALYZE_ENDPOINT}`,
+  //analysisEndpoint = `${ANALYSIS_ANALYZE_ENDPOINT}`,
 }) => {
   const { serviceId } = useParams<{ serviceId: string }>();
   const [service, setService] = useState<AnalysisService | null | undefined>();
@@ -71,7 +72,7 @@ const AnalysisForm: React.FC<AnalysisFormProps> = ({
     formData.append("arabic", options.language === "arabic" ? "true" : "false");
 
     if (service?.name) {
-        formData.append("report_type", service.name);
+      formData.append("report_type", service.name);
     }
 
     if (!selectedFile) {
@@ -82,23 +83,40 @@ const AnalysisForm: React.FC<AnalysisFormProps> = ({
     formData.append("reportFile", selectedFile);
 
     try {
-      const response = await fetch(analysisEndpoint, {
-        method: 'POST',
-        body: formData,
-      });
+      // --- CHANGE START ---
+      const analysisEndpoint = `${ANALYSIS_ANALYZE_ENDPOINT}`; // Use a relative path if axios.defaults.baseURL is set
+      const token = localStorage.getItem('token');
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
+      if (!token) {
+        setError("Authentication token not found. Please log in.");
+        return;
       }
 
-      const result: AnalysisResult = await response.json();
+      const response = await axios.post(analysisEndpoint, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        },
+        // axios interceptors will automatically add Authorization and X-User-Id
+      });
+      // --- CHANGE END ---
+
+      // Axios typically throws an error for non-2xx responses, so the !response.ok check is usually not needed here.
+      // You'd handle errors in the catch block directly based on axios's error structure.
+
+      const result = response.data; // Axios puts the response body in .data
       setAnalysisInProgress(false);
       onAnalysisComplete?.(result);
 
     } catch (e: any) {
       console.error("Analysis request failed:", e);
-      setError(e.message || "Failed to generate analysis.");
+      // Axios errors have a specific structure
+      if (axios.isAxiosError(e) && e.response) {
+        setError(e.response.data?.detail || e.response.data?.message || `HTTP error! status: ${e.response.status}`);
+        // The axios interceptor for 401/403 should already handle logout/redirect.
+      } else {
+        setError(e.message || "Failed to generate analysis.");
+      }
       setAnalysisInProgress(false);
     }
   };

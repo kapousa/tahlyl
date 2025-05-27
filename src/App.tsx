@@ -1,9 +1,11 @@
+// src/App.tsx
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from './lib/queryClient';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import "./axiosConfig";
+import "./axiosConfig"; // Assuming this sets up axios defaults
 import NotFound from "./pages/NotFound";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
@@ -16,17 +18,17 @@ import HealthRecords from "./pages/HealthRecords";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Register from "./components/user/register";
-import AuthGuard from "./components/auth/AuthGuard"; // 👈 Import the AuthGuard
-
-const queryClient = new QueryClient();
-
+import AuthGuard from "./components/auth/AuthGuard";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+// AutoLogout remains the same
 const AutoLogout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout; // Specify type for clarity
+
     const logout = () => {
       localStorage.removeItem("token");
       localStorage.removeItem("token_type");
@@ -38,7 +40,7 @@ const AutoLogout = () => {
       timeoutId = setTimeout(logout, 30 * 60 * 1000); // 30 min inactivity
     };
 
-    let timeoutId = setTimeout(logout, 30 * 60 * 1000);
+    resetTimeout(); // Set initial timeout
 
     const events = ["click", "mousemove", "keydown", "scroll"];
 
@@ -57,28 +59,42 @@ const AutoLogout = () => {
   return null;
 };
 
+// New component for initial root path redirection
+const RootRedirect = () => {
+  const token = localStorage.getItem("token");
+  // You might want to add a loading state here if token validation takes time
+  // For now, assuming token check is synchronous
+  return token ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />;
+};
+
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AutoLogout />
+        <AutoLogout /> {/* AutoLogout is always active */}
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Protected Routes */}
+          {/* Root path handler: Redirects to /dashboard if logged in, else to /login */}
+          <Route path="/" element={<RootRedirect />} />
+
+          {/* Protected Routes - wrapped by AuthGuard and DashboardLayout */}
+          {/* Note: The DashboardLayout implicitly handles the <Outlet /> for nested routes */}
           <Route
-            path="/"
-            element={
+            element={ // Use 'element' for the layout component
               <AuthGuard>
                 <DashboardLayout />
               </AuthGuard>
             }
           >
-            <Route index element={<Dashboard />} />
+            {/* These paths are relative to the parent route's path (which is currently implicit empty string) */}
+            {/* Since DashboardLayout is at the root of protected routes, the paths start from '/' */}
+            <Route path="/dashboard" element={<Dashboard />} /> {/* Specific path for Dashboard */}
             <Route path="/medicalreports" element={<MedicalReports />} />
             <Route path="/medicalreports/:testId" element={<MedicalReportDetail />} />
             <Route path="/analysis" element={<Analysis />} />
