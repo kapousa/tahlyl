@@ -13,6 +13,9 @@ export const BLOOD_TESTS_ENDPOINT: string = `${API_BASE_URL}/bloodtest`;
 // Medical Reports
 export const MEDICAL_REPORT_ENDPOINT: string = `${API_BASE_URL}/report`;
 export const MEDICAL_REPORT_LIST_CARDS_ENDPOINT: string = `${MEDICAL_REPORT_ENDPOINT}/cards`
+export const MEDICAL_REPORT_ANALYSIS_LIST_ENDPOINT = (reportId: string): string => {
+  return `${MEDICAL_REPORT_ENDPOINT}/${reportId}/analysis`;
+};
 
 // Analysis services
 export const ANALYSIS_SERVICES_ENDPOINT: string = `${API_BASE_URL}/services`;
@@ -21,3 +24,4 @@ export const ANALYSIS_SERVICE_VIEW_ENDPOINT: string = `${ANALYSIS_SERVICES_ENDPO
 // Analysis
 export const ANALYSIS_ENDPOINT: string = `${API_BASE_URL}/analysis`;
 export const ANALYSIS_ANALYZE_ENDPOINT: string = `${ANALYSIS_ENDPOINT}/analyze`;
+export const DIGITAL_PROFILE_VIEW_ENDPOINT: string = `${ANALYSIS_ENDPOINT}/digitalprofile`

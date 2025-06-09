@@ -17,6 +17,7 @@ import Profile from "./pages/Profile";
 import HealthRecords from "./pages/HealthRecords";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
+import AnalysisDetail from "./pages/AnalysisDetail";
 import Register from "./components/user/register";
 import AuthGuard from "./components/auth/AuthGuard";
 import { useEffect } from "react";
@@ -97,6 +98,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} /> {/* Specific path for Dashboard */}
             <Route path="/medicalreports" element={<MedicalReports />} />
             <Route path="/medicalreports/:testId" element={<MedicalReportDetail />} />
+            <Route path="/:reportId/analysis" element={<AnalysisDetail />} />
             <Route path="/analysis" element={<Analysis />} />
             <Route path="/analysis/:serviceId" element={<AnalysisService />} />
             <Route path="/records" element={<HealthRecords />} />

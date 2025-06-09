@@ -128,3 +128,37 @@ export interface HealthMetric {
     value: number;
   }[];
 }
+
+// src/pages/AnalysisDetailPage.tsx or a types file
+// (You might want to define these in a separate types file for better organization, e.g., src/types/analysis.ts)
+
+// Matches the structure of an individual metric within "detailed_results"
+interface DetailedMetric {
+  value: number;
+  unit: string;
+  normal_range: string; // The backend now provides this as a string, e.g., "Up to 200 mg/dL"
+  status: string;
+}
+
+// Matches the overall structure of the API response
+interface ReportAnalysisData {
+  summary: string;
+  detailed_results: { // This is an object where keys are metric names (e.g., "Total Cholesterol")
+    [key: string]: DetailedMetric; // Each value is a DetailedMetric object
+  };
+  risk_assessment: string; // This is the text for risks
+  recommendations: string; // This is the text for recommendations
+  // Note: 'attention_points' is not in your current API response, so we won't add it yet.
+}
+
+// For rendering metrics (combines the key and value from detailed_results)
+interface ProcessedMetricForDisplay {
+  name: string;
+  value: number;
+  unit: string;
+  normal_range: string;
+  status: string;
+  // If you want to split normal_range into min/max again:
+  // reference_range_min: string;
+  // reference_range_max: string;
+}

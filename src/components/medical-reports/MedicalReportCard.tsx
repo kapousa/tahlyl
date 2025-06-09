@@ -4,6 +4,7 @@ import { MedicalReportCardType } from '@/types';
 import { Button } from '@/components/ui/button'; // Adjust path if necessary
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useNavigate } from 'react-router-dom';
 
 interface MedicalReportCardProps {
   test: MedicalReportCardType;
@@ -59,10 +60,23 @@ const renderValue = (value: string | { [key: string]: any }): string => {
 };
 
 const MedicalReportCard: React.FC<MedicalReportCardProps> = ({ test }) => {
+  const navigate = useNavigate(); // Initialize the navigate hook
+
   if (!test) {
     console.warn("MedicalReportCard received an undefined 'test' prop.");
     return null;
   }
+
+  // --- Handler for the Analysis button ---
+  const handleAnalysisClick = () => {
+    // Navigate to the analysis page for this specific report ID
+    // The route '/analysis/:reportId' needs to match your Route path in App.tsx
+    if (test.id) {
+      navigate(`/${test.id}/analysis`);
+    } else {
+      console.error("Cannot navigate to analysis: test.id is undefined.");
+    }
+  };
 
   return (
     <Card className="flex flex-col h-full">
@@ -111,10 +125,15 @@ const MedicalReportCard: React.FC<MedicalReportCardProps> = ({ test }) => {
           <p className="text-muted-foreground text-sm">No detailed metrics available for this report.</p>
         )}
       </CardContent>
-      <CardFooter className="flex gap-2"> {/* Removed justify-between here */}
-        {/* Added flex-grow and w-1/2 for consistent sizing across screens */}
+      <CardFooter className="flex gap-2">
         <Button variant="outline" className="flex-grow w-1/2">Details</Button>
-        <Button variant="outline" className="flex-grow w-1/2">Analysis</Button>
+        <Button
+          variant="outline"
+          className="flex-grow w-1/2"
+          onClick={handleAnalysisClick} // Attach the click handler here
+        >
+          Analysis
+        </Button>
       </CardFooter>
     </Card>
   );
