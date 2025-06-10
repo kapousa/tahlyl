@@ -1,5 +1,5 @@
 // src/components/reports/ReportResultsDisplay.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Import useEffect
 
 // Assuming these interfaces are either defined here or imported from a central types file
 interface AnalysisDetailedResultItem {
@@ -9,9 +9,9 @@ interface AnalysisDetailedResultItem {
   status?: string;
 }
 
-interface AnalysisResult { // Matches your backend AnalysisResult Pydantic schema
-  // --- NEW: Add report_name field here ---
+export interface AnalysisResult {
   report_name?: string;
+  tone_id?: string; // Add tone_id here
 
   summary?: string | Record<string, any> | any[];
   lifestyle_changes?: string | Record<string, any> | any[];
@@ -37,10 +37,14 @@ interface AnalysisResult { // Matches your backend AnalysisResult Pydantic schem
   individualized_recommendations?: string | Record<string, any> | any[];
   date?: string;
   detailed_results?: Record<string, AnalysisDetailedResultItem>;
-  doctor_questions?: Record<string, AnalysisDetailedResultItem>;
+  doctor_questions?: string | Record<string, any> | any[];
 }
 
-export interface ReportAnalysisData extends AnalysisResult {}
+// The prop received by ReportResultsDisplay will now be an array of AnalysisResult
+export interface ReportResultsDisplayProps {
+    reportAnalyses: AnalysisResult[]; // Changed from singular reportAnalysis to plural reportAnalyses
+}
+
 
 interface ProcessedMetricForDisplay {
   name: string;
@@ -57,10 +61,22 @@ const formatTitle = (key: string): string => {
     .replace(/\b\w/g, char => char.toUpperCase());
 };
 
-const renderContent = (content: string | Record<string, any> | any[]): React.ReactNode => {
+// Pass the key to renderContent for specific handling
+const renderContent = (content: string | Record<string, any> | any[], key: string): React.ReactNode => {
     if (typeof content === 'string') {
         return <p className="text-lg text-gray-600 leading-relaxed">{content}</p>;
     } else if (Array.isArray(content)) {
+        // Specific handling for doctor_questions as a list of strings
+        if (key === 'doctor_questions' && content.every(item => typeof item === 'string')) {
+            return (
+                <ul className="list-disc pl-5 text-lg text-gray-600 leading-relaxed space-y-1">
+                    {content.map((item, index) => (
+                        <li key={index}>{item}</li>
+                    ))}
+                </ul>
+            );
+        }
+        // Generic array rendering for other fields
         return (
             <ul className="list-disc pl-5 text-lg text-gray-600 leading-relaxed">
                 {content.map((item, index) => (
@@ -69,12 +85,13 @@ const renderContent = (content: string | Record<string, any> | any[]): React.Rea
             </ul>
         );
     } else if (typeof content === 'object' && content !== null) {
+        // This handles objects that are (potentially) AnalysisDetailedResultItem structures
         if (Object.values(content).some(val => typeof val === 'object' && 'value' in val && 'status' in val)) {
              return (
                 <div className="space-y-2">
-                    {Object.entries(content).map(([key, item]) => (
-                        <div key={key} className="border-l-4 border-blue-400 pl-3">
-                            <h4 className="font-semibold text-md text-gray-700">{formatTitle(key)}:</h4>
+                    {Object.entries(content).map(([innerKey, item]) => (
+                        <div key={innerKey} className="border-l-4 border-blue-400 pl-3">
+                            <h4 className="font-semibold text-md text-gray-700">{formatTitle(innerKey)}:</h4>
                             {item.value && <p className="text-gray-600">Value: {typeof item.value === 'object' ? JSON.stringify(item.value) : item.value}</p>}
                             {item.unit && <p className="text-gray-600">Unit: {item.unit}</p>}
                             {item.normal_range && <p className="text-gray-600">Normal Range: {typeof item.normal_range === 'object' ? JSON.stringify(item.normal_range) : item.normal_range}</p>}
@@ -95,11 +112,36 @@ const renderContent = (content: string | Record<string, any> | any[]): React.Rea
 };
 
 
-const ReportResultsDisplay: React.FC<ReportResultsDisplayProps> = ({ reportAnalysis }) => {
+const ReportResultsDisplay: React.FC<ReportResultsDisplayProps> = ({ reportAnalyses }) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<string>(''); // State to manage active tab
 
-  const allMetricsForDisplay: ProcessedMetricForDisplay[] = reportAnalysis.detailed_results
-    ? Object.entries(reportAnalysis.detailed_results).map(([name, details]) => ({
+  // Set initial active tab to 'general' or the first available tone_id
+  useEffect(() => {
+    if (reportAnalyses.length > 0) {
+      const generalAnalysis = reportAnalyses.find(analysis => analysis.tone_id === 'general');
+      if (generalAnalysis) {
+        setActiveTab('general');
+      } else {
+        setActiveTab(reportAnalyses[0].tone_id || ''); // Fallback to first available
+      }
+    }
+  }, [reportAnalyses]);
+
+  // Find the currently active analysis based on activeTab
+  const currentAnalysis = reportAnalyses.find(analysis => analysis.tone_id === activeTab);
+
+  // If no analysis is selected or available, display a message
+  if (!currentAnalysis) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-xl text-gray-500">No analysis results available for this report.</p>
+      </div>
+    );
+  }
+
+  const allMetricsForDisplay: ProcessedMetricForDisplay[] = currentAnalysis.detailed_results
+    ? Object.entries(currentAnalysis.detailed_results).map(([name, details]) => ({
         name,
         value: typeof details.value === 'number' ? details.value : parseFloat(details.value as string || '0'),
         unit: details.unit || '',
@@ -120,7 +162,8 @@ const ReportResultsDisplay: React.FC<ReportResultsDisplayProps> = ({ reportAnaly
   });
 
   const excludedFields = new Set([
-    'report_name', // --- NEW: Exclude report_name from dynamic rendering ---
+    'report_name',
+    'tone_id', // Exclude tone_id from dynamic rendering
     'summary',
     'detailed_results',
     'recommendations',
@@ -129,7 +172,7 @@ const ReportResultsDisplay: React.FC<ReportResultsDisplayProps> = ({ reportAnaly
     'id'
   ]);
 
-  const dynamicSections = Object.entries(reportAnalysis).filter(([key, value]) => {
+  const dynamicSections = Object.entries(currentAnalysis).filter(([key, value]) => {
     const isValuePresent = value !== null && value !== undefined &&
                            (typeof value === 'string' ? value.trim() !== '' : true) &&
                            (Array.isArray(value) ? value.length > 0 : true) &&
@@ -140,22 +183,41 @@ const ReportResultsDisplay: React.FC<ReportResultsDisplayProps> = ({ reportAnaly
 
   return (
     <div className="space-y-8">
-      {/* --- NEW: Display Report Name in the main heading --- */}
       <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-        {reportAnalysis.report_name ? `${reportAnalysis.report_name} Analysis` : 'Medical Report Analysis'}
+        {currentAnalysis.report_name ? `${currentAnalysis.report_name} Analysis` : 'Medical Report Analysis'}
       </h1>
 
-      {/* Section 1: Analysis Summary */}
+      {/* Tab Navigation */}
+      {reportAnalyses.length > 1 && ( // Only show tabs if there's more than one tone
+        <div className="flex border-b border-gray-200 mb-6">
+          {reportAnalyses.map((analysis) => (
+            analysis.tone_id && ( // Ensure tone_id exists before creating a tab
+              <button
+                key={analysis.tone_id}
+                className={`py-2 px-4 text-lg font-medium focus:outline-none transition-colors duration-200 ease-in-out
+                  ${activeTab === analysis.tone_id
+                    ? 'border-b-2 border-blue-500 text-blue-600'
+                    : 'text-gray-500 hover:text-blue-500 hover:border-blue-300'
+                  }`}
+                onClick={() => setActiveTab(analysis.tone_id!)}
+              >
+                {formatTitle(analysis.tone_id)} {/* Format tone_id for display */}
+              </button>
+            )
+          ))}
+        </div>
+      )}
+
+      {/* Render content based on the active tab (currentAnalysis) */}
       <section className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">Analysis Summary</h2>
-        {reportAnalysis.summary && typeof reportAnalysis.summary === 'string' && reportAnalysis.summary.trim() !== '' ? (
-          <p className="text-lg text-gray-600 leading-relaxed">{reportAnalysis.summary}</p>
+        {currentAnalysis.summary && typeof currentAnalysis.summary === 'string' && currentAnalysis.summary.trim() !== '' ? (
+          <p className="text-lg text-gray-600 leading-relaxed">{currentAnalysis.summary}</p>
         ) : (
           <p className="text-muted-foreground">No summary available for this report.</p>
         )}
       </section>
 
-      {/* Section 2: Detailed Metrics */}
       <section className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">Detailed Metrics</h2>
         <input
@@ -194,33 +256,29 @@ const ReportResultsDisplay: React.FC<ReportResultsDisplayProps> = ({ reportAnaly
         )}
       </section>
 
-      {/* Section for Recommendations (Explicitly handled) */}
-      {reportAnalysis.recommendations && typeof reportAnalysis.recommendations === 'string' && reportAnalysis.recommendations.trim() !== '' && (
+      {currentAnalysis.recommendations && typeof currentAnalysis.recommendations === 'string' && currentAnalysis.recommendations.trim() !== '' && (
         <section className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">Recommendations</h2>
-          {renderContent(reportAnalysis.recommendations)}
+          {renderContent(currentAnalysis.recommendations, 'recommendations')}
         </section>
       )}
 
-      {/* Section for Associated Risks (Explicitly handled, mapped from potential_implications) */}
-      {reportAnalysis.potential_implications && typeof reportAnalysis.potential_implications === 'string' && reportAnalysis.potential_implications.trim() !== '' && (
+      {currentAnalysis.potential_implications && typeof currentAnalysis.potential_implications === 'string' && currentAnalysis.potential_implications.trim() !== '' && (
         <section className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">Associated Risks</h2>
-          {renderContent(reportAnalysis.potential_implications)}
+          {renderContent(currentAnalysis.potential_implications, 'potential_implications')}
         </section>
       )}
 
-      {/* Dynamically generated sections */}
       {dynamicSections.map(([key, value]) => (
         <section key={key} className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">{formatTitle(key)}</h2>
-          {renderContent(value)}
+          {renderContent(value, key)}
         </section>
       ))}
 
-      {/* Attention Points placeholder (only if no other content is present) */}
-      {dynamicSections.length === 0 && !reportAnalysis.summary && !reportAnalysis.detailed_results &&
-       !reportAnalysis.recommendations && !reportAnalysis.potential_implications && (
+      {dynamicSections.length === 0 && !currentAnalysis.summary && !currentAnalysis.detailed_results &&
+       !currentAnalysis.recommendations && !currentAnalysis.potential_implications && (
         <section className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">Attention Points</h2>
             <p className="text-muted-foreground">

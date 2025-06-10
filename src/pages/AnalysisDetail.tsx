@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { MEDICAL_REPORT_ANALYSIS_LIST_ENDPOINT } from "@/configurations/api";
 
-// Import the new component and the shared ReportAnalysisData interface
-// Make sure ReportAnalysisData is correctly structured to match your AnalysisResult schema's main fields
-import ReportResultsDisplay, { ReportAnalysisData } from '@/components/medical-reports/MedicalReportResultsDisplay';
+// Import the default export (ReportResultsDisplay) and the named export (AnalysisResult)
+import ReportResultsDisplay, { AnalysisResult } from '@/components/medical-reports/MedicalReportResultsDisplay';
 
 const AnalysisDetail: React.FC = () => {
-  const [reportAnalysis, setReportAnalysis] = useState<ReportAnalysisData | null>(null);
+  // The state should now be an array of AnalysisResult
+  const [reportAnalyses, setReportAnalyses] = useState<AnalysisResult[]>([]);
   const { reportId } = useParams<{ reportId: string }>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +22,7 @@ const AnalysisDetail: React.FC = () => {
     const fetchAnalysisData = async () => {
       setLoading(true);
       setError(null);
-      setReportAnalysis(null);
+      setReportAnalyses([]); // Clear previous analyses on new fetch
 
       const token = localStorage.getItem('token');
 
@@ -47,10 +47,9 @@ const AnalysisDetail: React.FC = () => {
           throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
         }
 
-        // --- SIMPLIFIED: Directly receive the structured data ---
-        const data: ReportAnalysisData = await response.json();
-        setReportAnalysis(data); // This 'data' is now directly what the frontend expects.
-        // --- END SIMPLIFIED ---
+        // 'data' is already an array of AnalysisResult as per your backend
+        const data: AnalysisResult[] = await response.json();
+        setReportAnalyses(data); // Set the state with the array
 
       } catch (err: any) {
         console.error("Failed to fetch analysis details:", err);
@@ -63,16 +62,19 @@ const AnalysisDetail: React.FC = () => {
     fetchAnalysisData();
   }, [reportId]);
 
-  // Render Logic remains the same
+  // Render Logic
   if (loading) return <div className="p-4 text-center">Loading analysis details...</div>;
   if (error) return <div className="p-4 text-red-500">Error: {error}</div>;
-  if (!reportAnalysis) {
-    return <div className="p-4 text-muted-foreground">No detailed analysis available for this report.</div>;
-  }
 
+  // Pass the 'reportAnalyses' state directly to the ReportResultsDisplay component
   return (
     <div className="container mx-auto p-4">
-      <ReportResultsDisplay reportAnalysis={reportAnalysis} />
+      {/* Check if reportAnalyses array is not empty before rendering */}
+      {reportAnalyses.length > 0 ? (
+        <ReportResultsDisplay reportAnalyses={reportAnalyses} />
+      ) : (
+        <div className="text-center py-8 text-gray-500">No analysis results found for this report.</div>
+      )}
     </div>
   );
 };
